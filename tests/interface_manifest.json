@@ -1,0 +1,65 @@
+{
+  "campus.model": [
+    "APIKey",
+    "AccessGrant",
+    "AppCredentials",
+    "Assignment",
+    "AuthSession",
+    "Circle",
+    "ClassroomLink",
+    "Client",
+    "ClientAccess",
+    "DeviceCode",
+    "EmailOTP",
+    "Feedback",
+    "HttpAuthProperty",
+    "HttpHeader",
+    "HttpHeaderWithAuth",
+    "Integration",
+    "InternalModel",
+    "LessonGroup",
+    "LessonGroupMember",
+    "LoginSession",
+    "Model",
+    "OAuthToken",
+    "Question",
+    "RateLimitBucket",
+    "Response",
+    "Submission",
+    "Timetable",
+    "TimetableEntry",
+    "TimetableMetadata",
+    "TraceSpan",
+    "TraceSummary",
+    "TraceTree",
+    "TraceTreeNode",
+    "User",
+    "UserCredentials",
+    "Vault",
+    "Venue",
+    "VenueBooking"
+  ],
+  "campus.model.audit": [
+    "APIKey",
+    "RateLimitBucket",
+    "TraceSpan",
+    "TraceSummary",
+    "TraceTree",
+    "TraceTreeNode"
+  ],
+  "campus.model.classroom": [
+    "Assignment",
+    "ClassroomLink",
+    "Feedback",
+    "Question",
+    "Response",
+    "Submission"
+  ],
+  "campus.model.emailotp": [
+    "EmailOTP"
+  ],
+  "campus.model.http": [
+    "HttpHeader",
+    "HttpHeaderWithAuth"
+  ]
+}
