@@ -79,13 +79,13 @@ typecheck = ["mypy"]
 
 [[package]]
 name = "campus-common"
-version = "0.2.2"
+version = "0.3.0"
 description = "Campus shared kernel: env, errors, introspect, schema, utils, validation - PEP 420 namespace portion under campus/common"
 optional = false
 python-versions = ">=3.11.0,<3.15"
 groups = ["main"]
 files = [
-    {file = "campus_common-0.2.2-py3-none-any.whl", hash = "sha256:25d9b2fb05ddc6b1e711baba5e03bac20b3a00ba3eb3ae57d3ba93e7d50e502f"},
+    {file = "campus_common-0.3.0-py3-none-any.whl", hash = "sha256:c227cdd1508db23964dadde3dc7ad4db4be008b40c18133fa0306abda6b337c1"},
 ]
 
 [package.dependencies]
@@ -93,7 +93,7 @@ bcrypt = ">=5.0.0,<6.0.0"
 
 [package.source]
 type = "url"
-url = "https://github.com/nyjc-computing/campus-common/releases/download/v0.2.2/campus_common-0.2.2-py3-none-any.whl"
+url = "https://github.com/nyjc-computing/campus-common/releases/download/v0.3.0/campus_common-0.3.0-py3-none-any.whl"
 
 [[package]]
 name = "nodeenv"
@@ -174,4 +174,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11.0,<3.15"
-content-hash = "58a631f3cdb6ad50bdc904b9310dfce676720a1fa8bcf98fc7cae1016ab2c5d9"
+content-hash = "ba2975fdf74e29ac2c27afb56e187f8b6a99ce7146a6d192b47e629aefa80e1d"
