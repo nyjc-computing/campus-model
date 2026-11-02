@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "campus-model"
-version = "0.1.0"
+version = "0.1.1"
 description = "Campus domain models: dataclass entities under campus/model - PEP 420 namespace portion"
 authors = ["Ng Jun Siang <ngjunsiang@gmail.com>"]
 readme = "README.md"
@@ -10,7 +10,7 @@ packages = [{include = "campus/model", from = "src"}]
 python = ">=3.11.0,<3.15"
 # Models reference common schema types (CampusID, DateTime, ...); the
 # wheel URL pins the same release every consumer relocks to.
-campus-common = {url = "https://github.com/nyjc-computing/campus-common/releases/download/v0.2.1/campus_common-0.2.1-py3-none-any.whl"}
+campus-common = {url = "https://github.com/nyjc-computing/campus-common/releases/download/v0.2.2/campus_common-0.2.2-py3-none-any.whl"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.16.9"
