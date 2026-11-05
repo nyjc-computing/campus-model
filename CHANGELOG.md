@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4 — 2026-11-05
+
+New model: `HostedApp` (campus-classroom#81) — a single-file HTML app published to Campus app hosting. Slug is the stable hosting/reference address (immutable, unique); bytes are content-addressed under `content_hash` (opaque sha256 key, serve-time integrity check); `name` is display-only; `status` hooks approval gating. Served by the new `campus.api.hostedapps` resource and the SDK's `client.api.hostedapps` client.
+
 ## 0.1.0 — 2026-10-28
 
 Initial release: `campus.model` carved verbatim from the campus
