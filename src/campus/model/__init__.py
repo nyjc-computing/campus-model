@@ -30,6 +30,7 @@ __all__ = [
     "DeviceCode",
     "EmailOTP",
     "Feedback",
+    "HostedApp",
     "HttpAuthProperty",
     "HttpHeader",
     "HttpHeaderWithAuth",
@@ -75,6 +76,7 @@ from .credentials import AppCredentials, OAuthToken, UserCredentials
 from .device_code import DeviceCode
 from .emailotp import EmailOTP
 from .grant import AccessGrant
+from .hostedapp import HostedApp
 from .http import HttpAuthProperty, HttpHeader, HttpHeaderWithAuth
 from .integration import Integration
 from .login import LoginSession
