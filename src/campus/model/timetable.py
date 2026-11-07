@@ -18,6 +18,13 @@ It refers to one of these:
 This year's timetable and last year's timetable are two separate allocations.
 The data for an allocation is stored in some .xml file, named `filename`
 
+LessonGroup identity is anchored on `label` within a cohort year: a new
+allocation carrying the same label is the same group and reuses the same
+id (campus.api's create route updates the row's `timetable_id` in place).
+A year rollover mints new labels, and with them new identities — the
+committee re-maps subjcombi records then (matches v1 behaviour).
+(campus-model#5, campus#1080; #592 stable lessongroup identity.)
+
 Internal models not returned through APIs: 
 - WeekDay, TimeSlot, VenueTimeSlot 
 - use Integer IDs for their own id, and are referenced as such
@@ -58,10 +65,21 @@ class LessonGroup(Model):
     This represents a specific lesson (e.g. "pe mass (A)")
     - may involve multiple ADE participants
     - can occur multiple times in a week
-    
+
+    `id` is the group's stable identity across timetable versions:
+    campus.api reuses the id (by label match, campus#1080) when a new
+    allocation carries the same group, so references keyed by id —
+    subjcombi mappings — survive version switches. `timetable_id` is
+    therefore not a creation-time constant: it tracks the timetable
+    the group *currently* belongs to and is updated in place on reuse
+    (never re-minted; the collection is PK'd on id, one row per group).
+    Labels stay unique per row by the constraint below, and entries
+    persist their own copy of the label so older allocations keep
+    rendering after the row moves on.
+
     Fields:
-      timetable_id (CampusID): FK referencing the timetable this lessongroup is relevant to
-      label (String): Label brought over from xml, like 2527-COM
+      timetable_id (CampusID): FK referencing the timetable this lessongroup currently belongs to (updated on reuse)
+      label (String): Label brought over from xml, like 2527-COM. The identity anchor within a cohort year.
     """
     id: schema.CampusID = field(default_factory=(
         lambda: uid.generate_category_uid("lesson-group", length=8)
@@ -111,7 +129,10 @@ class TimetableEntry(Model):
       timetable_id (CampusID): FK referencing the timetable this lessongroup is relevant to
       lessongroup_id (CampusID): FK referencing a LessonGroup.id
       venuetimeslot_id (Integer): FK referencing a VenueTimeSlot.id
-      label (String | None): API-only lesson group label, such as 2527-COM
+      label (String | None): The group's label, persisted per entry
+        (campus-model#5) so a historical version stays self-describing
+        after its LessonGroup row is reused by a newer allocation;
+        None on legacy records created before label persistence.
     """
     id: schema.CampusID = field(default_factory=(
         lambda: uid.generate_category_uid("timetable-entry", length=16)
@@ -121,7 +142,7 @@ class TimetableEntry(Model):
     venue: schema.String  # e.g. "5-64"
     weekday: schema.String  # e.g. "Mon A"
     timeslot: schema.String  # e.g. "0800"
-    label: schema.String | None = field(default=None, metadata={"storage": False})
+    label: schema.String | None = None
     __constraints__ = constraints.Unique("lessongroup_id", "venuetimeslot_id", "timetable_id")
 
 
