@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.5 — 2026-11-07
+
+`TimetableEntry.label` is persisted (campus-model#5): the `storage: False`
+metadata is dropped, so each entry stores its group's label at creation and
+historical allocations stay self-describing after `LessonGroup` rows are
+reused across timetable versions by campus.api (label-anchored reuse,
+campus#1080 — the #592 stable lessongroup identity ruling). The
+`LessonGroup` and module-allocation docstrings now state the identity rule:
+`id` is the stable cross-version identity, `timetable_id` tracks the
+timetable the group *currently* belongs to and is updated in place on
+reuse. No storage migration: collections are schemaless and `from_storage`
+falls back to the field default, so legacy records deserialize with label
+None. No interface change (patch).
+
 ## 0.1.4 — 2026-11-05
 
 New model: `HostedApp` (campus-classroom#81) — a single-file HTML app published to Campus app hosting. Slug is the stable hosting/reference address (immutable, unique); bytes are content-addressed under `content_hash` (opaque sha256 key, serve-time integrity check); `name` is display-only; `status` hooks approval gating. Served by the new `campus.api.hostedapps` resource and the SDK's `client.api.hostedapps` client.
