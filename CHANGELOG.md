@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.6 — 2026-11-11
+
+New model: `CalendarDay` (timetable-v2's Manage Calendar, the v1
+calendar-editor lineage) — one row per calendar date, keyed by the ISO
+date itself (`id` carries `YYYY-MM-DD`; the date is the identity).
+`j1_code` / `j2_code` name the TT day each cohort runs, and
+`term_week` carries the seeded term-week label for display. The
+day-code vocabulary ships with the model: `TT_DAY_CODES` (the
+two-week Mon A..Fri B cycle), `FREE_CODE` ("Free", v1's NSD), and
+`DAY_CODE_VOCABULARY` — campus.api validates calendar writes against
+it. v1's per-date version stamping and venue-occupancy fields are
+deliberately not carried: the version in force is campus.api's
+effective-dated pointer trail's job. Additive (patch): `CalendarDay`
+joins the package `__all__`; the vocabulary constants are importable
+from `campus.model.calendar`.
+
 ## 0.1.5 — 2026-11-07
 
 `TimetableEntry.label` is persisted (campus-model#5): the `storage: False`
