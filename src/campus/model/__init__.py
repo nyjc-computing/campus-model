@@ -23,6 +23,7 @@ __all__ = [
     "AppCredentials",
     "Assignment",
     "AuthSession",
+    "CalendarDay",
     "Circle",
     "ClassroomLink",
     "Client",
@@ -62,6 +63,7 @@ __all__ = [
 from .audit import APIKey, RateLimitBucket, TraceSpan, TraceSummary, TraceTree, TraceTreeNode
 from .base import InternalModel, Model
 from .booking import Venue, VenueBooking
+from .calendar import CalendarDay
 from .circle import Circle
 from .classroom import (
     Assignment,
