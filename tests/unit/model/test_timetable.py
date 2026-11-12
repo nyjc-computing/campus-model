@@ -37,6 +37,72 @@ class TestTimetableMetadata(unittest.TestCase):
         self.assertIn("filename", fields)
 
 
+class TestTimetableMetadataLabel(unittest.TestCase):
+    """TimetableMetadata.label is the user-given display name.
+
+    The committee names an allocation for people ("2026 Term 1");
+    `filename` stays the immutable, unique import identity. The field
+    is optional and mutable; legacy records created before it existed
+    deserialize with the None default (collections are schemaless —
+    no migration).
+    """
+
+    def _make_metadata(self, **overrides) -> TimetableMetadata:
+        defaults = {
+            "filename": "2026.xml",
+            "start_date": "2026-01-01T00:00:00Z",
+            "end_date": "2026-12-31T00:00:00Z",
+        }
+        defaults.update(overrides)
+        return TimetableMetadata(**defaults)
+
+    def test_label_defaults_to_none(self):
+        """A label-less allocation stores None, not an empty name."""
+        meta = self._make_metadata()
+        self.assertIsNone(meta.label)
+        self.assertIsNone(meta.to_storage()["label"])
+
+    def test_to_storage_carries_label(self):
+        """A set label rides to_storage() with the identity fields."""
+        meta = self._make_metadata(label="2026 Term 1")
+        stored = meta.to_storage()
+        self.assertEqual(stored["label"], "2026 Term 1")
+        self.assertEqual(stored["filename"], "2026.xml")
+
+    def test_from_storage_reads_persisted_label(self):
+        """A stored label round-trips back."""
+        meta = TimetableMetadata.from_storage(
+            self._make_metadata(label="2026 Term 1").to_storage()
+        )
+        self.assertEqual(meta.label, "2026 Term 1")
+
+    def test_from_storage_tolerates_missing_label(self):
+        """Legacy records (pre-label) deserialize with label None."""
+        record = self._make_metadata().to_storage()
+        del record["label"]
+        meta = TimetableMetadata.from_storage(record)
+        self.assertIsNone(meta.label)
+
+    def test_timetable_inherits_label(self):
+        """The API model carries the label through construction."""
+        tt = Timetable(
+            filename="2026.xml",
+            start_date="2026-01-01T00:00:00Z",
+            end_date="2026-12-31T00:00:00Z",
+            label="2026 Term 1",
+            entries=[],
+        )
+        self.assertEqual(tt.label, "2026 Term 1")
+        self.assertIsNone(
+            Timetable(
+                filename="2026.xml",
+                start_date="2026-01-01T00:00:00Z",
+                end_date="2026-12-31T00:00:00Z",
+                entries=[],
+            ).label
+        )
+
+
 class TestTimetable(unittest.TestCase):
     """Tests for the Timetable API model."""
 
