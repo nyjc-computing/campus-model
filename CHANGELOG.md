@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.7 — 2026-11-12
+
+`TimetableMetadata.label` — the committee's user-given display name for
+a timetable allocation (timetable-v2 Manage Timetables). `filename`
+stays the allocation's immutable, unique import identity; `label` is
+what people see ("2026 Term 1") and is mutable through the metadata
+PATCH. Optional and additive (patch): collections are schemaless and
+`from_storage` falls back to the field default, so records created
+before the field deserialize with `label = None` — no storage
+migration, same reasoning as 0.1.5's entry-label persistence.
+
 ## 0.1.6 — 2026-11-11
 
 New model: `CalendarDay` (timetable-v2's Manage Calendar, the v1

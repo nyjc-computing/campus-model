@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "campus-model"
-version = "0.1.6"
+version = "0.1.7"
 description = "Campus domain models: dataclass entities under campus/model - PEP 420 namespace portion"
 authors = ["Ng Jun Siang <ngjunsiang@gmail.com>"]
 readme = "README.md"

@@ -155,7 +155,14 @@ class TimetableMetadata(Model):
         imported with each new timetable XML. 
     
     Fields:
-      filename (String): The XML filename it was imported from
+      filename (String): The XML filename it was imported from.
+        The allocation's identity — immutable and unique across
+        versions; the display name is `label`.
+      label (String | None): The committee's user-given display name
+        for the allocation (e.g. "2026 Term 1"). Mutable; None on
+        records created before the field existed (from_storage falls
+        back to the default — collections are schemaless, so legacy
+        rows need no migration).
       start_date (DateTime): 00:00 on the first day the timetable comes into effect
       end_date (DateTime): 00:00 on the last day the timetable is effective
     """
@@ -165,6 +172,7 @@ class TimetableMetadata(Model):
     filename: schema.String
     start_date: schema.DateTime
     end_date: schema.DateTime
+    label: schema.String | None = None
     __constraints__ = constraints.Unique("filename")
 
     def __post_init__(self) -> None:
