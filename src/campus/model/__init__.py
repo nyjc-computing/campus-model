@@ -62,7 +62,7 @@ __all__ = [
 
 from .audit import APIKey, RateLimitBucket, TraceSpan, TraceSummary, TraceTree, TraceTreeNode
 from .base import InternalModel, Model
-from .booking import Venue, VenueBooking
+from .booking import VenueBooking
 from .calendar import CalendarDay
 from .circle import Circle
 from .classroom import (
@@ -92,3 +92,4 @@ from .timetable import (
 )
 from .user import User
 from .vault import Vault
+from .venue import Venue
