@@ -1,6 +1,8 @@
 """campus.model.booking
 
-Venue and venue-booking entity models.
+Venue-booking entity model. The venue itself moved to
+campus.model.venue (campus-model#9): venues are documents-backed with
+a fluid metadata schema, while bookings keep the fixed table shape.
 """
 
 from dataclasses import dataclass, field
@@ -42,23 +44,4 @@ class VenueBooking(Model):
     # NOTE: This only prevents exact duplicate bookings.
     # Overlap checking must still be conducted separately
     __constraints__ = constraints.Unique("venue_id", "date", "start_time", "end_time")
-
-
-@dataclass(eq=False, kw_only=True)
-class Venue(Model):
-    """
-    Represents a venue that can be booked.
-
-    Fields:
-      id (CampusID): Unique identifier for the venue.
-      venue_name (String): Name of the venue.
-
-    Note:
-      Other model fields to be confirmed (TBC).
-    """
-    id: schema.CampusID = field(default_factory=(
-        lambda: uid.generate_category_uid("venue", length=8)
-    ))
-    venue_name: schema.String
-    venue_type: schema.String
 

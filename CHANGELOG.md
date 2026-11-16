@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0 — 2026-11-16
+
+**BREAKING**: `Venue` reshaped for the documents-backed venue surface
+(campus-model#9, campus#1099). The venue schema is deliberately fluid:
+`metadata` (freeform dict) carries the venue's facts and `notes`
+(str | None) carries freeform markdown; `updated_at` (DateTime | None)
+is stamped by the API resource layer on update. `venue_name` /
+`venue_type` are dropped — their only consumer was campus.api's
+table-backed bookings venue table, which moves to the documents
+backend in the same sweep; anything that stored a name moves it into
+`metadata`. Venue moves from `campus.model.booking` to
+`campus.model.venue`; the `campus.model.Venue` import is unchanged.
+
 ## 0.1.7 — 2026-11-12
 
 `TimetableMetadata.label` — the committee's user-given display name for
