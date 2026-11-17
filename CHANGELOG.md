@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.3 — 2026-11-17
+
+`APIKey.trace_user_id` / `APIKey.trace_client_id` (#944): opaque
+trace-read scoping binds, enforced server-side by campus.audit.
+Plain `str | None` (not identity schema types — campus.audit never
+resolves them against campus.auth); NULL on both axes = unscoped
+(operator/admin class); immutable like `expires_at` (mint-time only).
+Existing records read unscoped — consumers keep today's behavior.
+
 ## 0.2.2 — 2026-11-17
 
 Pin-only rebuild: campus-common v0.4.0 → v0.5.0

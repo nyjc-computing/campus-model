@@ -84,6 +84,10 @@ class APIKey(Model):
     expires_at/revoked_at, and access is scoped via the scopes list
     (e.g. "traces:read", "traces:*").
 
+    Trace-read scoping (#944): trace_user_id/trace_client_id are
+    opaque match-values the audit service enforces server-side at
+    read time (see the field comments).
+
     Issue: #566
     """
     id: schema.CampusID = field(default_factory=(
@@ -112,6 +116,21 @@ class APIKey(Model):
     )
     # Requests per minute, None for unlimited
     rate_limit: schema.Integer | None = None
+    # Trace-read scoping bind (#944): opaque match-values applied as
+    # span-attribute equality when a traces:read key queries traces.
+    # Plain strings by design — campus.audit is standalone and never
+    # resolves these against campus.auth; they match TraceSpan
+    # user_id/client_id exactly as producers wrote them. None on both
+    # axes = unscoped (the operator/admin key class). Immutable like
+    # expires_at: set at mint time, not PATCHable.
+    trace_user_id: str | None = field(
+        default=None,
+        metadata={"mutable": False}
+    )
+    trace_client_id: str | None = field(
+        default=None,
+        metadata={"mutable": False}
+    )
 
     def is_active(self) -> bool:
         """Check if the API key is currently active (not expired or
