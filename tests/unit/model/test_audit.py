@@ -1059,6 +1059,92 @@ class TestAPIKey(unittest.TestCase):
             APIKey.validate_update({})
 
 
+class TestAPIKeyTraceBind(unittest.TestCase):
+    """Trace-read scoping bind fields (#944).
+
+    trace_user_id/trace_client_id are opaque match-values: campus.audit
+    enforces them as span-attribute equality and never resolves them
+    against campus.auth, so they are plain str, not identity schema
+    types. NULL on both axes = unscoped (operator/admin class).
+    """
+
+    def _key(self, **kwargs):
+        defaults = {
+            "id": "key123",
+            "key_hash": "hash123",
+            "name": "Test Key",
+            "owner_id": "user456",
+        }
+        defaults.update(kwargs)
+        return APIKey(**defaults)
+
+    def test_apikey_bind_defaults_to_none(self):
+        """A key without a bind (operator/admin class) is unscoped."""
+        key = self._key()
+
+        self.assertIsNone(key.trace_user_id)
+        self.assertIsNone(key.trace_client_id)
+
+    def test_apikey_bind_initialization(self):
+        """A scoped key carries its bind values verbatim."""
+        key = self._key(
+            trace_user_id="student@nyjc.edu.sg",
+            trace_client_id="uid-client-abc",
+        )
+
+        self.assertEqual(key.trace_user_id, "student@nyjc.edu.sg")
+        self.assertEqual(key.trace_client_id, "uid-client-abc")
+
+    def test_apikey_bind_to_resource_exposed(self):
+        """to_resource() includes the bind so key managers see scoping."""
+        resource = self._key(trace_user_id="student@nyjc.edu.sg").to_resource()
+
+        self.assertEqual(resource["trace_user_id"], "student@nyjc.edu.sg")
+        self.assertEqual(resource["trace_client_id"], None)
+
+    def test_apikey_bind_to_storage_round_trip(self):
+        """to_storage()/from_storage() round-trip the bind values."""
+        key = self._key(trace_client_id="uid-client-abc")
+
+        restored = APIKey.from_storage(key.to_storage())
+
+        self.assertEqual(restored.trace_client_id, "uid-client-abc")
+        self.assertIsNone(restored.trace_user_id)
+
+    def test_apikey_bind_from_storage_missing_columns_default_none(self):
+        """Records written before the bind columns existed read unscoped.
+
+        The apikeys table gains the columns via ALTER TABLE with NULL
+        defaults; existing operator/admin rows must keep today's
+        unscoped behavior (#944).
+        """
+        record = {
+            "id": "key123",
+            "created_at": "2023-01-01T00:00:00Z",
+            "key_hash": "hash123",
+            "name": "Test Key",
+            "owner_id": "user456",
+            "scopes": ["traces:read"],
+            "expires_at": None,
+            "revoked_at": None,
+            "last_used": None,
+        }
+
+        key = APIKey.from_storage(record)
+
+        self.assertIsNone(key.trace_user_id)
+        self.assertIsNone(key.trace_client_id)
+
+    def test_apikey_bind_is_immutable_via_update(self):
+        """validate_update() rejects bind updates: scoping is mint-time
+        only, like expires_at."""
+        with self.assertRaises(ValueError):
+            APIKey.validate_update({"trace_user_id": "other@nyjc.edu.sg"})
+
+        with self.assertRaises(ValueError):
+            APIKey.validate_update({"trace_client_id": "uid-client-xyz"})
+
+
 class TestTraceTreeIdentity(unittest.TestCase):
     """Tree nodes carry span identity (#823).
 
