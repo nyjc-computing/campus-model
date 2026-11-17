@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-11-17
+
+Pin-only rebuild: campus-common v0.3.1 → v0.4.0 (policy error-surface
+scrubs, campus-common#8). No code changes — direct-URL deps bake the
+pinned wheel URL into this distribution's metadata, so the bump
+requires a rebuild here per the pin-rebuild contract.
+
 ## 0.2.0 — 2026-11-16
 
 **BREAKING**: `Venue` reshaped for the documents-backed venue surface
