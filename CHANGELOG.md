@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 — 2026-11-17
+
+Pin-only rebuild: campus-common v0.4.0 → v0.5.0
+(from_exception static-message fix, campus#1128). No code changes
+per the pin-rebuild contract.
+
 ## 0.2.1 — 2026-11-17
 
 Pin-only rebuild: campus-common v0.3.1 → v0.4.0 (policy error-surface
