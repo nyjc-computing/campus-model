@@ -320,6 +320,40 @@ class TestTraceTree(unittest.TestCase):
 
         self.assertIsNone(tree.root.device_id)
 
+    def test_treetree_from_spans_carries_full_tags_dict(self):
+        """Tree nodes carry the stored tags dict, not just device_id (#1175).
+
+        The tree/detail path dropped every tag except the device_id
+        lift, so tag-based enrichment (request_kind, journey_name,
+        warnings, event_type) was invisible in exactly the views the
+        audit UI and CLI render.
+        """
+        tags = {
+            "journey_id": "journey1",
+            "request_kind": "static",
+            "journey_name": "fetch-asset",
+            "warnings": ["slow-response"],
+        }
+        spans = [
+            self._make_span_dict(span_id="root", parent_span_id=None, tags=tags),
+        ]
+
+        tree = TraceTree.from_spans(spans)
+
+        self.assertEqual(tree.root.tags, tags)
+        self.assertEqual(tree.root.to_resource()["tags"], tags)
+
+    def test_treetree_from_spans_missing_tags_is_none(self):
+        """Spans without tags yield node.tags None."""
+        spans = [
+            self._make_span_dict(span_id="root", parent_span_id=None),
+        ]
+
+        tree = TraceTree.from_spans(spans)
+
+        self.assertIsNone(tree.root.tags)
+        self.assertIsNone(tree.root.to_resource()["tags"])
+
     def test_treetree_from_spans_single_span_becomes_root(self):
         """from_spans() with single span creates root with no children."""
         spans = [self._make_span_dict(span_id="root", parent_span_id=None)]
