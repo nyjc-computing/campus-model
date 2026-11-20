@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.5 — 2026-11-21
+
+`TraceTreeNode.tags` (#1175): the tree/detail path now carries the
+span's full stored tags dict (request_kind, journey_name, warnings,
+event_type, ...) instead of dropping everything except the device_id
+lift (#825). Parity with the flat spans list on the same spans; the
+`device_id` first-class field stays. Additive — existing consumers
+keep today's behavior.
+
 ## 0.2.3 — 2026-11-17
 
 `APIKey.trace_user_id` / `APIKey.trace_client_id` (#944): opaque

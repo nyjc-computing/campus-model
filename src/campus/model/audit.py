@@ -324,6 +324,8 @@ class TraceTreeNode(InternalModel):
         started_at: Span start timestamp
         duration_ms: Span duration in milliseconds
         error_message: Error details if applicable
+        tags: Full span tags dict (request_kind, journey_name, warnings,
+            event_type, ...)
         children: Nested child spans
         depth: Depth in tree (0 for root)
         offset: Offset from parent start for visualization
@@ -352,6 +354,12 @@ class TraceTreeNode(InternalModel):
     # device the request is attributed to. Lives in span tags, so the
     # tree builder lifts it out to a first-class field.
     device_id: str | None = None
+    # Full span tags (#1175): same parity rationale — the tree/detail
+    # path must carry the stored tags dict (request_kind, journey_name,
+    # warnings, event_type) or consumers can't see tag-based
+    # enrichment that the flat list plainly returns. device_id above
+    # stays as the first-class convenience lift.
+    tags: dict | None = None
 
     # Tree structure
     children: "list[TraceTreeNode]" = field(default_factory=list)
@@ -379,6 +387,7 @@ class TraceTreeNode(InternalModel):
             "client_id": self.client_id,
             "user_id": self.user_id,
             "user_agent": self.user_agent,
+            "tags": self.tags,
             "children": [child.to_resource() for child in self.children],
             "depth": self.depth,
             "offset": self.offset,
@@ -535,6 +544,7 @@ class TraceTree(InternalModel):
             user_id=span_dict.get("user_id"),
             user_agent=span_dict.get("user_agent"),
             device_id=(span_dict.get("tags") or {}).get("device_id"),
+            tags=span_dict.get("tags"),
             children=child_nodes,
             depth=depth,
             offset=offset,
