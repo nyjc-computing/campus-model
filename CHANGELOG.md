@@ -1,6 +1,17 @@
 # Changelog
 
-## 0.2.5 — 2026-11-21
+## 0.2.6 — 2026-11-23
+
+`VenueBooking.status` (campus#1217): the approval-lifecycle field —
+"pending" on creation, moved to "approved"/"denied" by the booking
+authority (venues.admin globally, or the venue category's
+venues.<category>.admin circle). Plain `schema.String` with a
+"pending" default; the vocabulary is a route-layer contract for now.
+Records written before the column read "pending". Additive — no
+consumer constructs VenueBooking today (the campus.api bookings
+routes are the first).
+
+## 0.2.5 — 2026-11-21 — 2026-11-21
 
 `TraceTreeNode.tags` (#1175): the tree/detail path now carries the
 span's full stored tags dict (request_kind, journey_name, warnings,
