@@ -27,6 +27,10 @@ class VenueBooking(Model):
       start_time (Time): Start time of the booking.
       end_time (Time): End time of the booking.
       date (Date): Date of the booking.
+      status (String): Approval lifecycle: "pending" on creation; the
+        booking authority (venues.admin globally, or the venue
+        category's venues.<category>.admin circle — campus#1217)
+        moves it to "approved" or "denied". Owners never set status.
 
     Constraints:
       - Unique by venue_id, date, start_time, and end_time to prevent exact duplicate bookings.
@@ -41,6 +45,7 @@ class VenueBooking(Model):
     start_time: schema.Time
     end_time: schema.Time
     date: schema.Date
+    status: schema.String = field(default="pending")
     # NOTE: This only prevents exact duplicate bookings.
     # Overlap checking must still be conducted separately
     __constraints__ = constraints.Unique("venue_id", "date", "start_time", "end_time")
