@@ -943,8 +943,36 @@ class TestAPIKey(unittest.TestCase):
             name="Test Key",
             owner_id="user456",
         )
-
         self.assertFalse(key.is_expired())
+
+    def test_apikey_is_expired_handles_naive_date_only_expiry(self):
+        """A date-only expiry string compares as UTC, never crashes (#1273).
+
+        The mint accepts arbitrary strings (--expires-at 2026-11-26);
+        a naive datetime used to raise TypeError against the aware
+        utc_time.now(), which 500'd every request presenting the key at
+        authentication — before any scope check or storage query ran.
+        """
+        key = APIKey(
+            id="key123",
+            key_hash="hash123",
+            name="Test Key",
+            owner_id="user456",
+            expires_at="2026-11-26",
+        )
+        # MUST not raise; the actual boolean depends on wall-clock time.
+        self.assertIsInstance(key.is_expired(), bool)
+
+    def test_apikey_is_expired_handles_naive_timestamp_expiry(self):
+        """A tz-less ISO timestamp is normalized to UTC for comparison."""
+        key = APIKey(
+            id="key123",
+            key_hash="hash123",
+            name="Test Key",
+            owner_id="user456",
+            expires_at="2020-01-01T00:00:00",
+        )
+        self.assertTrue(key.is_expired())
 
     def test_apikey_is_expired_returns_false_for_future_expiry(self):
         """is_expired() returns False when expires_at is in the future."""

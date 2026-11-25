@@ -156,7 +156,17 @@ class APIKey(Model):
         expires_at = self.expires_at
         if isinstance(expires_at, str):
             expires_at = schema.DateTime(expires_at)
-        return expires_at.to_datetime() < utc_time.now()
+        expires_dt = expires_at.to_datetime()
+        if expires_dt.tzinfo is None:
+            # Naive expiry (e.g. a date-only string like "2026-11-26"
+            # accepted by the mint): compare in UTC, never crash.
+            # A naive datetime here used to raise TypeError against the
+            # aware utc_time.now(), which 500'd EVERY request presenting
+            # the key at authentication — campus#1273, found live
+            # 2026-11-25 (a diag key minted --expires-at 2026-11-26 made
+            # all of its own reads 500 before any storage query ran).
+            expires_dt = expires_dt.replace(tzinfo=utc_time.UTC)
+        return expires_dt < utc_time.now()
 
     def is_revoked(self) -> bool:
         """Check if the API key is revoked.
